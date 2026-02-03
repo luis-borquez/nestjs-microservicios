@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -9,6 +10,16 @@ export class ProductsService {
   constructor(private prisma: PrismaService) { }
 
   async create(createProductDto: CreateProductDto) {
+    const existsByName = await this.findOneByName(createProductDto.name);
+
+    if (existsByName) {
+      throw new RpcException({
+        status: 'error',
+        message: `Product with name ${createProductDto.name} already exists`,
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
+    }
+
     const product = await this.prisma.product.create({
       data: createProductDto
     });
@@ -49,7 +60,11 @@ export class ProductsService {
     });
 
     if (!product) {
-      throw new NotFoundException(`Product not found with id ${id}`);
+      throw new RpcException({
+        status: 'error',
+        message: `Product not found with id ${id}`,
+        statusCode: HttpStatus.NOT_FOUND,
+      });
     }
 
     return product;
@@ -73,7 +88,11 @@ export class ProductsService {
       const existsByName = await this.findOneByName(data.name);
 
       if (existsByName && id !== existsByName.id) {
-        throw new BadRequestException(`Product with name ${data.name} already exists`);
+        throw new RpcException({
+          status: 'error',
+          message: `Product with name ${data.name} already exists`,
+          statusCode: HttpStatus.BAD_REQUEST,
+        });
       }
     }
 
@@ -93,7 +112,7 @@ export class ProductsService {
       where: { id },
       data: { available: false }
     }); // Soft delete
-    
+
     return product
   }
 }
