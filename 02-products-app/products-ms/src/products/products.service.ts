@@ -44,8 +44,8 @@ export class ProductsService {
         limit: limit,
         total: totalProducts,
         lastPage: lastPage,
-        next: ((totalProducts / limit!) > page!) ? `/products?page=${(page! + 1)}&limit=${limit}` : null,
-        prev: (page! > 1) ? `/products?page=${(page! - 1)}&limit=${limit}` : null,
+        next: ((totalProducts / limit!) > page!) ? `/api/products?page=${(page! + 1)}&limit=${limit}` : null,
+        prev: (page! > 1) ? `/api/products?page=${(page! - 1)}&limit=${limit}` : null,
       },
       data: products,
     }
