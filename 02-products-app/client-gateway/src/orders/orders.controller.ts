@@ -21,7 +21,9 @@ export class OrdersController {
 
   @Get()
   findAllOrders(@Query() orderPaginationDto: OrderPaginationDto) {
-    return this.client.send('findAllOrders', orderPaginationDto);
+    return this.client.send('findAllOrders', orderPaginationDto)
+      .pipe(catchError(err => { throw new RpcException(err) })
+      );
   }
 
   @Get(':status')

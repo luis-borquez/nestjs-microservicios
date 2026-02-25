@@ -6,7 +6,6 @@ import { RpcCustomExceptionFilter } from './common';
 
 async function bootstrap() {
   const logger = new Logger('Main-ClientGateway');
-
   const app = await NestFactory.create(AppModule);
   
   app.setGlobalPrefix('api');
@@ -25,3 +24,4 @@ async function bootstrap() {
   logger.log(`client-gateway listening on port ${envs.PORT}`);
 }
 bootstrap();
+ 
